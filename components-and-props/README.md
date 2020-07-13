@@ -1,51 +1,41 @@
-### React Hello World with Webpack
+# Components
+
+Components are the main building blocks of react applications. 
+
+If you have a To Do List the list itself could be a component and every list item would be a component 
+as well.
+
+The root component is usually named App.js 
+
+### Functional and class components
+
+We can have functional and class components. Functional components cannot have state (if we are not usinn hooks) - more on state later. 
+
+Let's write a class component called Greeting
+
+```
+// src/index.js
+import React from 'react';
+// import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
+import './style.css';
 
 
-Install the starter template
-```
-$ git clone https://github.com/ironhack-labs/react-module-day1-start
-$ cd react-module-day1-start
-$ npm install
+class Greeting extends React.Component {
+    render() {
+        return (
+            <h1>Hello</h1>
+        )
+    }
+}
+
+ReactDOM.render(
+    <Greeting />,
+    document.getElementById('root')
+);
 ```
 
-Then create these folders
-
-```
-$ mkdir dist public src
-```
-
-Create an index.html file
-```
-$ touch public/index.html
-```
-
-The dist folder in the script tag is where webpack references our built react app by webpack
-```
-// public/index.html
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Ironhackers Reacting</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script src="../dist/bundle.js"></script>
-  </body>
-</html>
-```
-
-We also need react and react-dom
-```
-$ npm install react@16.3.2 react-dom@16.3.2 
-```
-
-We need a file that is the entry point to our app
-```
-$ mkdir src
-$ touch src/index.js
-```
+### The same done with a functional component
 
 ```
 // src/index.js
@@ -53,133 +43,258 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './style.css';
 
+const Greeting = () => {
+    return <h1>Hello</h1>
+}
+
 ReactDOM.render(
-    'Hello World',
+    <Greeting />,
     document.getElementById('root')
 );
 ```
 
-Add the style.css to the src directory
-```
-$ touch src/style.css
-```
+### Now we want to give a name to the compoment that should then be displayed much like the parameter of a function - that is called a prop in react - data that is passed from outside to the component
+
+### Pops and class components
 
 ```
-// src/style.css
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: lightskyblue;
+// src/index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './style.css';
+
+class Greeting extends React.Component {
+    render() {
+        console.log(this.props);
+        return (
+            <h1>Hello {this.props.name}!!</h1>
+        )
+    }
 }
-```
 
-Now run 
-```
-$ npm run webpack --watch
-```
-
-Or to build 
-Add build: webpack to the package.json - otherwise you would have to go into the right node_modules folder
-```
-$ npm run build
-```
-Or without modifying package.json
-```
-$ npx webpack
-```
-
-### Demo React Dev Tools
-
-
-
-## JSX 
-
-JSX - JavaScript eXtension is a special syntax that produces React Elements - it reminds you 
-of handlebars but it has the full power of javascipt
-
-
-In index.js: render this element instead of the string 'Hello World'
-```
-const element = <h1>Hello, world!</h1>;
-```
-
-### Embedding JavaScript Expressions in JSX
-
-You can enbed any JS Expression in JSX within curly brace
-
-```
-const name = 'Dan Abramov';
-const element = <h1>Hello, {name}</h1>;
-```
-
-### Return it from functions
-```
-const greet = () => {
-    return <h1 className="heading">Hello World!!</h1>;
-}
 
 ReactDOM.render(
-    greet(),
+    <Greeting name="Alice" />,
     document.getElementById('root')
 );
 ```
 
-### Wrap multilines with parenthesis
+### Now exactly the same but with a functional component
+
 ```
-const element = (
-  <h1>
-    Hello, {use}!
-  </h1>
+// src/index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './style.css';
+
+// props is the first argument of the functional component
+const Greeting = (props) => {
+    return <h1>Hello {props.name}</h1>
+}
+
+ReactDOM.render(
+    <Greeting name="Alice" />,
+    document.getElementById('root')
+);
+
+```
+### We can use the same component multiple times with different props
+### We add the mentioned root component App to our structure and inside there we render two Greeting components
+```
+// src/index.js
+import React, { Fragment } from 'react';
+import ReactDOM from 'react-dom';
+import './style.css';
+
+class App extends React.Component {
+    render() {
+        return (
+            <Fragment>
+                <Greeting name="Marty" />
+                <Greeting name="Biff" />
+            </Fragment>
+        )
+    }
+}
+
+const Greeting = (props) => {
+    return <h1>Hello {props.name}</h1>
+}
+
+ReactDOM.render(
+    <App />,
+    document.getElementById('root')
 );
 ```
 
+### Now let's have the components in different files - we want a Profile component that has a picture and some details - we want three components, a Profile, Picture and Detail component. Plus our App root component in a separate file
 
-### HTML Attributes change because these are also reserved keywords in JavaScript:
-for -> htmlfor
-class -> className  ( from react-16 on also class works but not everywhere )
-
-
-
-### Inline styling - style attribute has to reference an object - either create object before or inline 
-### You can also only return a single node - that is why you have to wrap the element in a div
 ```
-const myStyle = {
-  height: "200px"
-};
+$ touch src/App.js
+$ touch src/Profile.js
+$ touch src/Picture.js
+$ touch src/Detail.js
+```
 
-const element = (
-    <div>
-        <p
-        style={{
-            backgroundColor: "pink"
-        }}
-        >
-        Random number: {Math.floor(Math.random() * 10)}
-        </p>
-        <p style={myStyle}>
-            Second Paragraph
-        </p>
-    </div>
+### First add the App.js
+```
+// src/App.js
+
+import React from 'react'
+
+const App = () => {
+    return (
+        <div>
+            <h1>Hello</h1>
+        </div>
+    )
+}
+
+export default App;
+```
+
+### And import and render it in index.js
+```
+// src/index.js
+import React, { Fragment } from 'react';
+import ReactDOM from 'react-dom';
+import './style.css';
+import App from './App';
+
+ReactDOM.render(
+    <App />,
+    document.getElementById('root')
 );
 ```
 
-### You need to close all tags 
+### Now add the Profile Component - the App component renders the profile component
 ```
-<br> -> <br />
-<img src="" alt=""> -> <img src="" alt="" />
+// src/Profile.js
+
+import React from 'react'
+
+const Profile = () => {
+    return (
+        <div>
+            <h1>Profile</h1>
+        </div>
+    )
+}
+
+export default Profile;
 ```
 
-### That's what's happening internally - babel compiles to REACT.createElement()
+### And in the App component:
+```
+// src/App.js
+import React from 'react'
+import Profile from './Profile';
+
+const App = () => {
+    return (
+        <Profile />
+    )
+}
+
+export default App;
+```
+
+### From the App component we want to pass a user object to the Profile
+
+### Add user object to App.js
 
 ```
-const element = (
-  <h1 className="greeting">
-    Hello, world!
-  </h1>
-);
-// get's compiled to this:
-const element = React.createElement(
-  'h1',
-  {className: 'greeting'},
-  'Hello, world!'
-);
+// src/App.js
+
+import React from 'react'
+import Profile from './Profile';
+
+const App = () => {
+    const user = {
+        name: 'Alice',
+        email: 'alice@dundermifflin.com',
+        picture: 'https://bit.ly/2zVs57p'
+    }
+    return (
+        <Profile data={user} />
+    )
+}
+
+export default App;
+```
+
+```
+// src/Profile.js
+
+import React from 'react'
+
+const Profile = (props) => {
+    console.log(props.data.name);
+    return (
+        <div>
+            <h1>Profile</h1>
+        </div>
+    )
+}
+
+export default Profile;
+```
+
+### Now the data should be passed to Detail and Picture that will be rendered in the Profile component
+
+```
+// src/Profile.js
+
+import React, { Fragment } from 'react'
+import Picture from './Picture';
+import Detail from './Detail';
+
+
+const Profile = (props) => {
+    console.log(props.data.name);
+    return (
+        <Fragment>
+            <h1>Profile</h1>
+            <Picture imageUrl={props.data.picture} />
+            <Detail name={props.data.name} email={props.data.email} />
+        </Fragment>
+    )
+}
+
+export default Profile;
+```
+
+```
+// src/Detail.js
+
+import React, { Fragment } from 'react'
+
+const Detail = (props) => {
+    return (
+        <Fragment>
+            <p>
+                Name: {props.name}
+            </p>
+            <p>
+                Email: {props.email}
+            </p>
+        </Fragment>
+    )
+}
+
+export default Detail;
+```
+
+```
+// src/Picture.js
+
+import React from 'react'
+
+const Picture = (props) => {
+    return (
+        <img src={props.imageUrl} style={{ width: '200px' }} />
+    )
+}
+export default Picture;
+
 ```
